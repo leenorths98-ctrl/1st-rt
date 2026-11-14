@@ -5,7 +5,7 @@ import { MINUTE_OPTIONS, WARNING_MS, MANAGERS, ACCESS_PIN } from "@/lib/constant
 
 type Room = {
   id: number;
-  status: "idle" | "running" | "waiting";
+  status: "idle" | "running" | "waiting" | "checkout";
   endTime: number | null;
   manager: string | null;
 };
@@ -235,21 +235,22 @@ export default function Home() {
     fetchRooms();
   };
 
-  const setWaiting = async (roomId: number) => {
+  const setWaiting = async (roomId: number, status: "waiting" | "checkout" = "waiting") => {
+    const label = status === "waiting" ? "입실대기" : "퇴실대기";
     setRooms((prev) =>
       prev.map((r) =>
-        r.id === roomId ? { ...r, status: "waiting", endTime: null } : r
+        r.id === roomId ? { ...r, status, endTime: null } : r
       )
     );
     try {
       const res = await fetch("/api/rooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "waiting", roomId }),
+        body: JSON.stringify({ action: status, roomId }),
       });
       if (!res.ok) throw new Error(`서버 응답 오류 (${res.status})`);
     } catch (e: any) {
-      setError("입실대기 실패: " + (e?.message || "알 수 없는 오류"));
+      setError(label + " 실패: " + (e?.message || "알 수 없는 오류"));
     }
     fetchRooms();
   };
@@ -411,6 +412,10 @@ export default function Home() {
             bg = "#b6f36a";
             labelBg = "#3d8b2e";
           }
+          if (room.status === "checkout") {
+            bg = "#ffb347";
+            labelBg = "#c45c00";
+          }
           if (room.status === "running") {
             bg = "#dfeaf5";
             labelBg = "#6a4fc9";
@@ -424,7 +429,7 @@ export default function Home() {
             labelBg = "#7f1d1d";
           }
           if (isSelected) {
-            if (!isWarning && !isExpired && room.status !== "waiting") {
+            if (!isWarning && !isExpired && room.status !== "waiting" && room.status !== "checkout") {
               bg = "#ffe14d";
               labelBg = "#7a6400";
             }
@@ -490,6 +495,8 @@ export default function Home() {
                   </span>
                 ) : room.status === "waiting" ? (
                   <span className="room-waiting">입실대기</span>
+                ) : room.status === "checkout" ? (
+                  <span className="room-checkout">퇴실대기</span>
                 ) : (
                   <span className="room-idle">빈방</span>
                 )}
@@ -512,18 +519,25 @@ export default function Home() {
         <div className="minute-block">{renderMinuteButtons("dock")}</div>
         <div className="dock-actions">
           <button
-            className="reset-btn"
-            disabled={!selectedRoom}
-            onClick={() => selectedRoom && resetRoom(selectedRoom.id)}
-          >
-            퇴실
-          </button>
-          <button
             className="wait-btn"
             disabled={!selectedRoom}
             onClick={() => selectedRoom && setWaiting(selectedRoom.id)}
           >
             입실대기
+          </button>
+          <button
+            className="checkout-btn"
+            disabled={!selectedRoom}
+            onClick={() => selectedRoom && setWaiting(selectedRoom.id, "checkout")}
+          >
+            퇴실대기
+          </button>
+          <button
+            className="reset-btn"
+            disabled={!selectedRoom}
+            onClick={() => selectedRoom && resetRoom(selectedRoom.id)}
+          >
+            퇴실
           </button>
         </div>
       </div>

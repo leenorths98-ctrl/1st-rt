@@ -12,7 +12,7 @@ export const ROOMS_KEY = "noraebang:rooms";
 
 export type Room = {
   id: number; // 101 ~ 118
-  status: "idle" | "running" | "waiting";
+  status: "idle" | "running" | "waiting" | "checkout";
   endTime: number | null; // epoch ms
   manager: string | null;
 };
@@ -32,7 +32,9 @@ function normalizeRooms(data: Room[]): Room[] {
   return data.map((r, i) => ({
     id: typeof r?.id === "number" ? r.id : ROOM_ID_START + i,
     status:
-      r?.status === "running" || r?.status === "waiting" ? r.status : "idle",
+      r?.status === "running" || r?.status === "waiting" || r?.status === "checkout"
+        ? r.status
+        : "idle",
     endTime: r?.endTime ?? null,
     manager: r?.manager ?? null,
   }));

@@ -11,7 +11,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { action, roomId, minutes, manager } = body as {
-    action: "add" | "reset" | "resetAll" | "waiting" | "setManager";
+    action: "add" | "reset" | "resetAll" | "waiting" | "checkout" | "setManager";
     roomId?: number;
     minutes?: number;
     manager?: string | null;
@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
   } else if (action === "reset") {
     room.status = "idle";
     room.endTime = null;
-  } else if (action === "waiting") {
-    room.status = "waiting";
+  } else if (action === "waiting" || action === "checkout") {
+    room.status = action;
     room.endTime = null;
   } else if (action === "setManager") {
     room.manager = manager ?? null;

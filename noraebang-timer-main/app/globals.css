@@ -197,6 +197,12 @@ button {
   font-size: clamp(13px, 1.6vw, 17px);
 }
 
+.room-checkout {
+  color: #8a3d00;
+  font-weight: 800;
+  font-size: clamp(13px, 1.6vw, 17px);
+}
+
 @keyframes pulse {
   0%,
   100% {
@@ -257,19 +263,21 @@ button {
 
 .minute-btn:disabled,
 .reset-btn:disabled,
-.wait-btn:disabled {
+.wait-btn:disabled,
+.checkout-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 .dock-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 6px;
 }
 
 .reset-btn,
-.wait-btn {
+.wait-btn,
+.checkout-btn {
   width: 100%;
   color: #fff;
   padding: 8px 4px;
@@ -284,6 +292,10 @@ button {
 
 .wait-btn {
   background: #3d8b2e;
+}
+
+.checkout-btn {
+  background: #e67e22;
 }
 
 /* 태블릿·노트북: 방 18개가 한 화면에 들어가도록 그리드가 남은 높이를 나눔 */
@@ -398,12 +410,13 @@ button {
 
   .dock-actions {
     flex: 1;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     align-content: stretch;
   }
 
   .reset-btn,
-  .wait-btn {
+  .wait-btn,
+  .checkout-btn {
     width: auto;
     white-space: nowrap;
     padding: 10px 16px;
